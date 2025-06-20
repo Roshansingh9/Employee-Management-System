@@ -1,0 +1,248 @@
+.App {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 1rem;
+  color: white;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+}
+
+/* Form Section */
+.form-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  height: fit-content;
+}
+
+.form-section h2 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+}
+
+.employee-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.form-actions button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-actions button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  flex: 1;
+}
+
+.form-actions button[type="submit"]:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.form-actions button[type="submit"]:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #545b62;
+}
+
+/* List Section */
+.list-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.list-section h2 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 2px solid #28a745;
+  padding-bottom: 0.5rem;
+}
+
+.employee-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.employee-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.employee-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.employee-info h3 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 1.25rem;
+}
+
+.employee-info p {
+  margin: 0.25rem 0;
+  color: #666;
+}
+
+.employee-info .email {
+  color: #007bff;
+  font-weight: 500;
+}
+
+.employee-info .salary {
+  color: #28a745;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.employee-info .hire-date {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.employee-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+.employee-actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.edit-btn {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.edit-btn:hover:not(:disabled) {
+  background-color: #e0a800;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.employee-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Messages */
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 0.75rem;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+.no-employees {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-style: italic;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #ddd;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .employee-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+}
