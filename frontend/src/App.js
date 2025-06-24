@@ -1,32 +1,67 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Mock API functions for demonstration
-const mockAPI = {
-  employees: [
-    { id: 1, name: 'John Doe', email: 'john@example.com', department: 'Engineering', position: 'Developer', salary: 75000, hire_date: '2023-01-15' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', department: 'Marketing', position: 'Manager', salary: 85000, hire_date: '2022-06-10' },
-    { id: 3, name: 'Mike Johnson', email: 'mike@example.com', department: 'Sales', position: 'Representative', salary: 60000, hire_date: '2023-03-20' }
-  ],
-  
-  getEmployees: () => Promise.resolve(mockAPI.employees),
-  
-  createEmployee: (employee) => {
-    const newEmployee = { ...employee, id: Date.now(), hire_date: new Date().toISOString().split('T')[0] };
-    mockAPI.employees.push(newEmployee);
-    return Promise.resolve(newEmployee);
-  },
-  
-  updateEmployee: (id, employee) => {
-    const index = mockAPI.employees.findIndex(emp => emp.id === id);
-    if (index !== -1) {
-      mockAPI.employees[index] = { ...mockAPI.employees[index], ...employee };
+// API configuration
+const API_BASE_URL = 'https://keploy-assignment-2.onrender.com';
+
+// API functions for backend integration
+const api = {
+  // Get all employees
+  getEmployees: async () => {
+    const response = await fetch(`${API_BASE_URL}/employees`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return Promise.resolve(mockAPI.employees[index]);
+    return await response.json();
   },
-  
-  deleteEmployee: (id) => {
-    mockAPI.employees = mockAPI.employees.filter(emp => emp.id !== id);
-    return Promise.resolve();
+
+  // Create new employee
+  createEmployee: async (employee) => {
+    const response = await fetch(`${API_BASE_URL}/employees`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(employee)
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  },
+
+  // Update employee
+  updateEmployee: async (id, employee) => {
+    const response = await fetch(`${API_BASE_URL}/employees/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(employee)
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  },
+
+  // Delete employee
+  deleteEmployee: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/employees/${id}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  },
+
+  // Get specific employee (optional - for future use)
+  getEmployee: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/employees/${id}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
   }
 };
 
@@ -42,7 +77,7 @@ function App() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   // Ref for scrolling to form
   const formRef = useRef(null);
 
@@ -50,11 +85,11 @@ function App() {
   const fetchEmployees = async () => {
     try {
       setLoading(true);
-      const data = await mockAPI.getEmployees();
+      const data = await api.getEmployees();
       setEmployees(data);
       setError('');
     } catch (err) {
-      setError('Failed to fetch employees');
+      setError('Failed to fetch employees. Please check your connection.');
       console.error('Error fetching employees:', err);
     } finally {
       setLoading(false);
@@ -81,11 +116,11 @@ function App() {
 
       if (editingId) {
         // Update employee
-        await mockAPI.updateEmployee(editingId, employeeData);
+        await api.updateEmployee(editingId, employeeData);
         setEditingId(null);
       } else {
         // Create new employee
-        await mockAPI.createEmployee(employeeData);
+        await api.createEmployee(employeeData);
       }
 
       // Reset form and refresh list
@@ -96,11 +131,11 @@ function App() {
         position: '',
         salary: ''
       });
-      
+
       await fetchEmployees();
       setError('');
     } catch (err) {
-      setError('Failed to save employee');
+      setError('Failed to save employee. Please try again.');
       console.error('Error saving employee:', err);
     } finally {
       setLoading(false);
@@ -117,12 +152,12 @@ function App() {
       salary: employee.salary.toString()
     });
     setEditingId(employee.id);
-    
+
     // Scroll to form with smooth animation
     setTimeout(() => {
-      formRef.current?.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start' 
+      formRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
       });
     }, 100);
   };
@@ -132,11 +167,11 @@ function App() {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
         setLoading(true);
-        await mockAPI.deleteEmployee(id);
+        await api.deleteEmployee(id);
         await fetchEmployees();
         setError('');
       } catch (err) {
-        setError('Failed to delete employee');
+        setError('Failed to delete employee. Please try again.');
         console.error('Error deleting employee:', err);
       } finally {
         setLoading(false);
@@ -163,19 +198,22 @@ function App() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5', fontFamily: 'Arial, sans-serif' }}>
-      <header style={{ 
-        backgroundColor: '#2c3e50', 
-        color: 'white', 
-        padding: '1rem', 
+      <header style={{
+        backgroundColor: '#2c3e50',
+        color: 'white',
+        padding: '1rem',
         textAlign: 'center',
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}>
         <h1 style={{ margin: 0 }}>Employee Management System</h1>
+        <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.9rem', opacity: 0.8 }}>
+          Connected to: {API_BASE_URL}
+        </p>
       </header>
 
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
         {/* Employee Form */}
-        <section 
+        <section
           ref={formRef}
           style={{
             backgroundColor: 'white',
@@ -204,14 +242,14 @@ function App() {
               ✏️ EDITING MODE
             </div>
           )}
-          
-          <h2 style={{ 
+
+          <h2 style={{
             color: editingId ? '#3498db' : '#2c3e50',
             marginTop: editingId ? '1rem' : '0'
           }}>
             {editingId ? '✏️ Edit Employee' : '➕ Add New Employee'}
           </h2>
-          
+
           {editingId && (
             <div style={{
               backgroundColor: '#e3f2fd',
@@ -225,7 +263,7 @@ function App() {
               <strong>📝 You're currently editing an employee.</strong> Make your changes below and click "Update Employee" to save.
             </div>
           )}
-          
+
           {error && (
             <div style={{
               backgroundColor: '#ffebee',
@@ -238,8 +276,8 @@ function App() {
               {error}
             </div>
           )}
-          
-          <div onSubmit={handleSubmit}>
+
+          <form onSubmit={handleSubmit}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
               <input
                 type="text"
@@ -258,7 +296,7 @@ function App() {
                 onFocus={(e) => e.target.style.borderColor = '#3498db'}
                 onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
               />
-              
+
               <input
                 type="email"
                 name="email"
@@ -276,7 +314,7 @@ function App() {
                 onFocus={(e) => e.target.style.borderColor = '#3498db'}
                 onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
               />
-              
+
               <input
                 type="text"
                 name="department"
@@ -294,7 +332,7 @@ function App() {
                 onFocus={(e) => e.target.style.borderColor = '#3498db'}
                 onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
               />
-              
+
               <input
                 type="text"
                 name="position"
@@ -312,7 +350,7 @@ function App() {
                 onFocus={(e) => e.target.style.borderColor = '#3498db'}
                 onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
               />
-              
+
               <input
                 type="number"
                 name="salary"
@@ -333,11 +371,10 @@ function App() {
                 onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
               />
             </div>
-            
+
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <button 
-                type="submit" 
-                onClick={handleSubmit}
+              <button
+                type="submit"
                 disabled={loading}
                 style={{
                   backgroundColor: editingId ? '#3498db' : '#27ae60',
@@ -353,10 +390,10 @@ function App() {
               >
                 {loading ? 'Saving...' : (editingId ? '💾 Update Employee' : '➕ Add Employee')}
               </button>
-              
+
               {editingId && (
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={handleCancelEdit}
                   style={{
                     backgroundColor: '#95a5a6',
@@ -364,7 +401,8 @@ function App() {
                     border: 'none',
                     padding: '0.75rem 1.5rem',
                     borderRadius: '4px',
-                    fontSize: '1rem',                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    cursor: 'pointer',
                     fontWeight: 'bold'
                   }}
                 >
@@ -372,7 +410,7 @@ function App() {
                 </button>
               )}
             </div>
-          </div>
+          </form>
         </section>
 
         {/* Employee List */}
@@ -381,20 +419,36 @@ function App() {
             <h2 style={{ color: '#2c3e50', margin: 0 }}>
               👥 Employees ({employees.length})
             </h2>
+            <button
+              onClick={fetchEmployees}
+              disabled={loading}
+              style={{
+                backgroundColor: '#3498db',
+                color: 'white',
+                border: 'none',
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                fontSize: '0.9rem',
+                opacity: loading ? 0.6 : 1
+              }}
+            >
+              🔄 Refresh
+            </button>
           </div>
-          
+
           {loading && (
-            <div style={{ 
-              textAlign: 'center', 
+            <div style={{
+              textAlign: 'center',
               padding: '2rem',
               backgroundColor: 'white',
               borderRadius: '8px',
               color: '#7f8c8d'
             }}>
-              Loading...
+              Loading employees from server...
             </div>
           )}
-          
+
           {employees.length === 0 && !loading ? (
             <div style={{
               textAlign: 'center',
@@ -413,8 +467,8 @@ function App() {
               gap: '1.5rem'
             }}>
               {employees.map((employee) => (
-                <div 
-                  key={employee.id} 
+                <div
+                  key={employee.id}
                   style={{
                     backgroundColor: 'white',
                     padding: '1.5rem',
@@ -445,22 +499,24 @@ function App() {
                       ✏️
                     </div>
                   )}
-                  
+
                   <div style={{ marginBottom: '1rem' }}>
                     <h3 style={{ margin: '0 0 0.5rem 0', color: '#2c3e50' }}>{employee.name}</h3>
                     <p style={{ margin: '0.25rem 0', color: '#7f8c8d' }}>✉️ {employee.email}</p>
                     <p style={{ margin: '0.25rem 0', color: '#7f8c8d' }}>🏢 {employee.department}</p>
                     <p style={{ margin: '0.25rem 0', color: '#7f8c8d' }}>💼 {employee.position}</p>
                     <p style={{ margin: '0.25rem 0', color: '#27ae60', fontWeight: 'bold' }}>
-                      💰 ${employee.salary.toLocaleString()}
+                      💰 ${employee.salary?.toLocaleString() || 'N/A'}
                     </p>
-                    <p style={{ margin: '0.25rem 0', color: '#7f8c8d', fontSize: '0.9rem' }}>
-                      📅 Hired: {new Date(employee.hire_date).toLocaleDateString()}
-                    </p>
+                    {employee.hire_date && (
+                      <p style={{ margin: '0.25rem 0', color: '#7f8c8d', fontSize: '0.9rem' }}>
+                        📅 Hired: {new Date(employee.hire_date).toLocaleDateString()}
+                      </p>
+                    )}
                   </div>
-                  
+
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button 
+                    <button
                       onClick={() => handleEdit(employee)}
                       disabled={loading}
                       style={{
@@ -477,7 +533,7 @@ function App() {
                     >
                       ✏️ Edit
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDelete(employee.id)}
                       disabled={loading}
                       style={{
