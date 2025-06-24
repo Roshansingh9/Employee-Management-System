@@ -205,7 +205,7 @@ The application achieves **98% test coverage** across all major components:
 
 ### Coverage Summary
 
-![Test Coverage Screenshot](test_screenshots/coverage.png)
+![Test Coverage Screenshot](Backend/testing_screenshots/coverage.png)
 
 
 ### What's Covered
@@ -305,7 +305,7 @@ env =
 - **Email**: roshan.kr.singh9857@gmail.com  
 - [**LinkedIn**](https://www.linkedin.com/in/roshan-kumar-singh-60b68a253/)  
 - [**Portfolio**](https://roshansingh.live)
-- **GitHub Repository**: [Keploy_Assignment-2](https://github.com/Roshansingh9/Keploy_Assignment-2)
+- [**GitHub Repository**](https://github.com/Roshansingh9/Keploy_Assignment-2)
 
 ### 🐛 Bug Reports
 If you encounter any bugs or issues, please [create an issue](https://github.com/Roshansingh9/Keploy_Assignment-2/issues) with:
