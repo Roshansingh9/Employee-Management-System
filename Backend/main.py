@@ -45,7 +45,8 @@ def root():
 @app.post("/employees", response_model=EmployeeResponse, status_code=status.HTTP_201_CREATED)
 def create_employee(employee: Employee):
     """Create a new employee"""
-    employee_dict = employee.dict()
+    # Use model_dump instead of dict() to avoid deprecation warning
+    employee_dict = employee.model_dump()
     
     # Check if email already exists
     existing_employee = employees_collection.find_one({"email": employee.email})
@@ -106,8 +107,8 @@ def update_employee(employee_id: str, employee_update: EmployeeUpdate):
             detail="Employee not found"
         )
     
-    # Prepare update data
-    update_data = {k: v for k, v in employee_update.dict().items() if v is not None}
+    # Prepare update data - use model_dump instead of dict()
+    update_data = {k: v for k, v in employee_update.model_dump().items() if v is not None}
     
     if not update_data:
         raise HTTPException(

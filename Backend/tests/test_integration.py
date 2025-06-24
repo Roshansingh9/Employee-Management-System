@@ -27,10 +27,16 @@ def test_full_employee_lifecycle(mock_collection):
         "hire_date": datetime.now()
     }
     
-    # Test Create Employee
-    mock_collection.find_one.return_value = None  # No existing employee
+    # Test Create Employee - Fix the mocking sequence
+    mock_collection.find_one.side_effect = [
+        None,  # First call: check for existing employee (should return None)
+        employee_data,  # Second call: get the newly inserted employee
+        employee_data,  # Third call: get employee for read test
+        employee_data,  # Fourth call: check if employee exists before update
+        {**employee_data, "salary": 65000},  # Fifth call: get updated employee
+        {**employee_data, "salary": 65000}   # Sixth call: check if employee exists before delete
+    ]
     mock_collection.insert_one.return_value.inserted_id = employee_id
-    mock_collection.find_one.return_value = employee_data
     
     response = client.post("/employees", json=test_employee)
     assert response.status_code == 201
@@ -43,14 +49,12 @@ def test_full_employee_lifecycle(mock_collection):
     
     # Test Update Employee
     mock_collection.update_one.return_value = None
-    updated_employee_data = {**employee_data, "salary": 65000}
-    mock_collection.find_one.return_value = updated_employee_data
     
     response = client.put(f"/employees/{str(employee_id)}", json={"salary": 65000})
     assert response.status_code == 200
     
     # Test Get All Employees
-    mock_collection.find.return_value = [updated_employee_data]
+    mock_collection.find.return_value = [{**employee_data, "salary": 65000}]
     response = client.get("/employees")
     assert response.status_code == 200
     assert len(response.json()) > 0

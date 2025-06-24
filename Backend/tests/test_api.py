@@ -27,17 +27,22 @@ def test_root_endpoint(mock_collection):
 @patch('main.employees_collection')
 def test_create_employee(mock_collection):
     """Test creating a new employee"""
-    # Mock the database operations
-    mock_collection.find_one.return_value = None  # No existing employee
-    mock_collection.insert_one.return_value.inserted_id = ObjectId()
+    # Create a proper ObjectId for the test
+    employee_id = ObjectId()
     
     # Mock the response after insertion
     mock_employee_data = {
-        "_id": ObjectId(),
+        "_id": employee_id,
         **test_employee,
         "hire_date": datetime.now()
     }
-    mock_collection.find_one.return_value = mock_employee_data
+    
+    # Set up the mock to handle the sequence of calls correctly
+    mock_collection.find_one.side_effect = [
+        None,  # First call: check for existing employee (should return None)
+        mock_employee_data  # Second call: get the newly inserted employee
+    ]
+    mock_collection.insert_one.return_value.inserted_id = employee_id
     
     response = client.post("/employees", json=test_employee)
     assert response.status_code == 201
@@ -108,11 +113,21 @@ def test_get_employee_not_found(mock_collection):
 def test_update_employee(mock_collection):
     """Test updating an employee"""
     employee_id = str(ObjectId())
-    mock_collection.find_one.return_value = {
+    original_employee = {
         "_id": ObjectId(employee_id),
         **test_employee,
         "hire_date": datetime.now()
     }
+    updated_employee = {
+        **original_employee,
+        "salary": 55000
+    }
+    
+    # Mock the sequence of calls for update
+    mock_collection.find_one.side_effect = [
+        original_employee,  # First call: check if employee exists
+        updated_employee    # Second call: get updated employee
+    ]
     mock_collection.update_one.return_value = None
     
     updated_data = {"salary": 55000}
