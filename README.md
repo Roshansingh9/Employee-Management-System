@@ -84,7 +84,7 @@ The application integrates a custom-built REST API with the following endpoints:
 
 #### 1. Clone the Repository
 ```bash
-git clone https://github.com/Roshansingh9/Keploy_Assignment-2
+git clone https://github.com/Roshansingh9/Employee-Management-System
 cd employee-management-system
 ```
 
@@ -281,13 +281,6 @@ employee-management-system/
 
 ## 🔧 Environment Configuration
 
-### Backend Environment Variables
-Create a `.env` file in the `Backend` directory:
-```env
-MONGO_URL=mongodb://localhost:27017/employee_db
-# For MongoDB Atlas:
-# MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/employee_db?retryWrites=true&w=majority
-```
 
 ### Test Environment
 The test configuration is handled in `pytest.ini`:
