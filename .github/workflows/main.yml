@@ -34,4 +34,4 @@ jobs:
     - name: Run Keploy Test Suite
       run: |
         export KEPLOY_API_KEY=${{ secrets.KEPLOY_API_KEY }}
-        keploy test-suite --app=9d37d025-32c2-49db-b7c8-c254f36a4aa0 --base-path=https://keploy-assignment-2.onrender.com/ --cloud
+        keploy test-suite --app=9d37d025-32c2-49db-b7c8-c254f36a4aa0 --base-path=https://keploy-assignment-2.onrender.com/ --cloud --debug
